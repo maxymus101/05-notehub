@@ -25,7 +25,7 @@ export default function NoteList({ notes, onDeleteNote }: NotesListProps) {
             <button
               className={css.button}
               // При кліку викликаємо функцію onDeleteNote, передаючи ID нотатки
-              onClick={() => onDeleteNote(note._id)}
+              onClick={() => onDeleteNote?.(note._id)}
             >
               Delete
             </button>
