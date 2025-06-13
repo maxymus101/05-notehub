@@ -126,8 +126,11 @@ export default function App() {
   };
 
   // Локальні змінні для рендерингу, обчислюються на кожному рендері.
-  const notesToDisplay: Note[] = data?.results || [];
+  const notesToDisplay: Note[] = data?.notes || [];
   const totalPagesToDisplay: number = data?.totalPages ?? 0;
+
+  console.log("Notes to display in App.tsx render:", notesToDisplay);
+  console.log("Total pages to display:", totalPagesToDisplay);
 
   return (
     <>

@@ -9,7 +9,7 @@ export interface NewNoteContent {
 }
 
 export interface PaginatedNotesResponse {
-  results: Note[];
+  notes: Note[];
   page: number;
   totalPages: number;
   totalResults: number;
@@ -48,7 +48,7 @@ export const fetchNotes = async (
     });
     console.log(
       `Fetched notes (page - ${page}, perPage - ${perPage}), search - "${search}"):`,
-      response.data
+      response
     );
     return response.data;
   } catch (error) {
