@@ -41,7 +41,7 @@ export const fetchNotes = async (
     const response = await axiosConfig.get<PaginatedNotesResponse>("/notes", {
       params: {
         page,
-        q: search,
+        search,
         perPage,
       },
     });
