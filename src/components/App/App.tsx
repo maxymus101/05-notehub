@@ -35,6 +35,7 @@ export default function App() {
   const [debouncedSearchQuery] = useDebounce(currentSearchQuery, 500); // Затримка 500ms
   const [currentPage, setCurrentPage] = useState(1);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false); // Стан для керування модалкою створення нотатки
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // === useQuery для отримання нотаток ===
   const {
@@ -116,6 +117,14 @@ export default function App() {
   const openCreateNoteModal = () => setIsNoteModalOpen(true);
   const closeCreateNoteModal = () => setIsNoteModalOpen(false);
 
+  const handleCloseErrorMessage = () => {
+    setErrorMessage(null); // Просто скидаємо стан помилки
+    // Також скидаємо стани помилок мутацій, якщо вони активні
+    queryClient.resetQueries({ queryKey: ["notes"], exact: false }); // Можливо, інвалідувати або скинути конкретні запити, якщо помилка пов'язана з ними
+    createNoteMutation.reset(); // Скидає стан мутації
+    deleteNoteMutation.reset(); // Скидає стан мутації
+  };
+
   // Локальні змінні для рендерингу, обчислюються на кожному рендері.
   const notesToDisplay: Note[] = data?.results || [];
   const totalPagesToDisplay: number = data?.totalPages ?? 0;
@@ -161,6 +170,7 @@ export default function App() {
               deleteNoteMutation.error?.message ||
               "An unknown error occurred"
             }
+            onClose={handleCloseErrorMessage}
           />
         )}
         {notesToDisplay.length > 0 && (

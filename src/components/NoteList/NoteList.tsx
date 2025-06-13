@@ -18,7 +18,7 @@ export default function NoteList({ notes, onDeleteNote }: NotesListProps) {
       {notes.map((note) => (
         <li key={note._id} className={css.listItem}>
           <h2 className={css.title}>{note.title}</h2>
-          <p className={css.content}>{note.body}</p>
+          <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
             {/* Додаємо заглушку для тегу, оскільки Note інтерфейс його не має */}
             <span className={css.tag}>General</span>

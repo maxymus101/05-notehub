@@ -4,7 +4,7 @@ import type { NoteTag } from "../types/note";
 
 export interface NewNoteContent {
   title: string;
-  body: string;
+  content: string;
   tag: NoteTag;
 }
 
@@ -22,7 +22,8 @@ export interface DeletedNoteInfo {
 
 const BASE_URL = "https://notehub-public.goit.study/api";
 
-const TOKEN = import.meta.env.VITE_NOTEHUB_TOKEN;
+const TOKEN = import.meta.env.VITE_NOTEHUB_T;
+console.log("Token = ", TOKEN);
 
 const axiosConfig = axios.create({
   baseURL: BASE_URL,
@@ -41,7 +42,7 @@ export const fetchNotes = async (
     const response = await axiosConfig.get<PaginatedNotesResponse>("/notes", {
       params: {
         page,
-        search,
+        ...(search !== "" && { search: search }),
         perPage,
       },
     });

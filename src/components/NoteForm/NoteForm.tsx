@@ -32,7 +32,7 @@ const validationSchema = Yup.object({
 
 const initialValues: NewNoteContent = {
   title: "",
-  body: "",
+  content: "",
   tag: "Personal", // Початкове значення за замовчуванням
 };
 
