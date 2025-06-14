@@ -2,7 +2,6 @@ import css from "./App.module.css";
 import NoteList from "../NoteList/NoteList.tsx";
 import NoteModal from "../NoteModal/NoteModal.tsx";
 import SearchBox from "../SearchBox/SearchBox.tsx";
-import NoteForm from "../NoteForm/NoteForm.tsx";
 import Pagination from "../Pagination/Pagination.tsx";
 
 import Loader from "../Loader/Loader.tsx";
@@ -85,11 +84,14 @@ export default function App() {
       <div className={css.app}>
         <header className={css.toolbar}>
           <SearchBox onSearch={handleSearch} />
-          <Pagination
-            pageCount={totalPagesToDisplay}
-            currentPage={currentPage}
-            onPageChange={handlePageClick}
-          />
+          {notesToDisplay.length > 0 && (
+            <Pagination
+              pageCount={totalPagesToDisplay}
+              currentPage={currentPage}
+              onPageChange={handlePageClick}
+            />
+          )}
+
           <button
             className={css.createNoteButton}
             onClick={openCreateNoteModal}
@@ -129,12 +131,7 @@ export default function App() {
             </p>
           )}
         <Toaster />
-        <NoteModal isOpen={isNoteModalOpen} onClose={closeCreateNoteModal}>
-          <NoteForm
-            onCancel={closeCreateNoteModal}
-            onModalClose={closeCreateNoteModal}
-          />
-        </NoteModal>
+        {isNoteModalOpen && <NoteModal onClose={closeCreateNoteModal} />}
       </div>
     </>
   );

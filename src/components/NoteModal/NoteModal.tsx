@@ -1,19 +1,24 @@
-import React, { useEffect, type MouseEvent } from "react";
+import { useEffect, type MouseEvent } from "react";
 import ReactDOM from "react-dom";
 import css from "./NoteModal.module.css";
+import NoteForm from "../NoteForm/NoteForm";
 
 interface NoteModalProps {
-  isOpen: boolean;
   onClose: () => void;
-  children: React.ReactNode;
 }
 
-export default function NoteModal({
-  isOpen,
-  onClose,
-  children,
-}: NoteModalProps) {
-  // Вихід із модалки на кнопку Esc
+export default function NoteModal({ onClose }: NoteModalProps) {
+  // useEffect для керування прокруткою сторінки.
+  // Він спрацьовує при монтуванні компонента (тобто, коли модалка відкривається)
+  // та очищається при розмонтуванні (коли модалка закривається).
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  // Обробник клавіші Escape.
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -28,9 +33,7 @@ export default function NoteModal({
     };
   }, [onClose]);
 
-  if (!isOpen) return null;
-
-  // Вихід із модалки через бекдроп
+  // Обробник кліку по бекдропу
   const handleBackdropClick = (event: MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
       onClose();
@@ -44,7 +47,9 @@ export default function NoteModal({
       aria-modal="true"
       onClick={handleBackdropClick}
     >
-      <div className={css.modal}>{children}</div>
+      <div className={css.modal}>
+        <NoteForm onCancel={onClose} onModalClose={onClose} />
+      </div>
     </div>,
     document.body
   );
