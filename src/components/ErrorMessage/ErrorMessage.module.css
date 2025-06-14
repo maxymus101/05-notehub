@@ -10,6 +10,7 @@
     background-color: rgba(255, 0, 0, 0.1);
 
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 1000;
@@ -23,6 +24,7 @@
     border: 1px solid #f5c6cb;
     border-radius: 5px;
     padding: 20px;
+    margin-bottom: 10px;
     font-size: 1.2em;
     text-align: center;
     max-width: 400px;
@@ -32,10 +34,7 @@
 }
 
 .closeButton {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
+    background: rgb(245, 245, 245);
     border: none;
     font-size: 1.2em;
     font-weight: bold;
@@ -43,15 +42,14 @@
     color: #721c24;
 
     padding: 0;
-    width: 30px;
+    min-width: 242px;
     height: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50%;
     transition: background-color 0.2s ease;
 }
 
 .closeButton:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(245, 245, 245, 0.6);
 }

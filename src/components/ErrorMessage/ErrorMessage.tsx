@@ -13,7 +13,7 @@ export default function ErrorMessage({
     <div className={css.errorContainer}>
       <p className={css.errorMessage}>⚠️ Error: {message}</p>
       <button onClick={onClose} className={css.closeButton}>
-        X
+        Retry
       </button>
     </div>
   );

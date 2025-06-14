@@ -3,6 +3,7 @@ import NoteList from "../NoteList/NoteList.tsx";
 import NoteModal from "../NoteModal/NoteModal.tsx";
 import SearchBox from "../SearchBox/SearchBox.tsx";
 import NoteForm from "../NoteForm/NoteForm.tsx";
+import Pagination from "../Pagination/Pagination.tsx";
 
 import Loader from "../Loader/Loader.tsx";
 import ErrorMessage from "../ErrorMessage/ErrorMessage.tsx";
@@ -27,7 +28,6 @@ import {
   keepPreviousData,
 } from "@tanstack/react-query";
 import toast, { Toaster } from "react-hot-toast";
-import ReactPaginate from "react-paginate";
 
 export default function App() {
   const queryClient = useQueryClient(); // Ініціалізуємо queryClient для інвалідації кешу
@@ -99,7 +99,7 @@ export default function App() {
   // Обробник зміни сторінки для ReactPaginate:
   const handlePageClick = ({ selected }: { selected: number }) => {
     setCurrentPage(selected + 1);
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Прокрутка до верху сторінки
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   //* Обробник видалення нотатки
@@ -133,19 +133,11 @@ export default function App() {
       <div className={css.app}>
         <header className={css.toolbar}>
           <SearchBox onSearch={handleSearch} />
-          {notesToDisplay.length > 0 && totalPagesToDisplay > 1 && (
-            <ReactPaginate
-              pageCount={totalPagesToDisplay}
-              pageRangeDisplayed={5}
-              marginPagesDisplayed={1}
-              onPageChange={handlePageClick}
-              forcePage={currentPage - 1}
-              containerClassName={css.pagination}
-              activeClassName={css.active}
-              nextLabel="→"
-              previousLabel="←"
-            />
-          )}
+          <Pagination
+            pageCount={totalPagesToDisplay}
+            currentPage={currentPage}
+            onPageChange={handlePageClick}
+          />
           <button
             className={css.createNoteButton}
             onClick={openCreateNoteModal}
