@@ -13,6 +13,7 @@ export default function NoteModal({
   onClose,
   children,
 }: NoteModalProps) {
+  // Вихід із модалки на кнопку Esc
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -29,6 +30,7 @@ export default function NoteModal({
 
   if (!isOpen) return null;
 
+  // Вихід із модалки через бекдроп
   const handleBackdropClick = (event: MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
       onClose();

@@ -32,10 +32,9 @@ import toast, { Toaster } from "react-hot-toast";
 export default function App() {
   const queryClient = useQueryClient(); // Ініціалізуємо queryClient для інвалідації кешу
   const [currentSearchQuery, setCurrentSearchQuery] = useState("");
-  const [debouncedSearchQuery] = useDebounce(currentSearchQuery, 500); // Затримка 500ms
+  const [debouncedSearchQuery] = useDebounce(currentSearchQuery, 500);
   const [currentPage, setCurrentPage] = useState(1);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false); // Стан для керування модалкою створення нотатки
-  // const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // === useQuery для отримання нотаток ===
   const {
@@ -102,7 +101,7 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  //* Обробник видалення нотатки
+  // Обробник видалення нотатки
   const handleDeleteNote = (id: number) => {
     deleteNoteMutation.mutate(id);
   };
@@ -117,8 +116,6 @@ export default function App() {
   const closeCreateNoteModal = () => setIsNoteModalOpen(false);
 
   const handleCloseErrorMessage = () => {
-    // setErrorMessage(null); // Просто скидаємо стан помилки
-    // Також скидаємо стани помилок мутацій, якщо вони активні
     queryClient.resetQueries({ queryKey: ["notes"], exact: false }); // Можливо, інвалідувати або скинути конкретні запити, якщо помилка пов'язана з ними
     createNoteMutation.reset(); // Скидає стан мутації
     deleteNoteMutation.reset(); // Скидає стан мутації

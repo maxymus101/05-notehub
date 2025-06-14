@@ -33,7 +33,7 @@ const validationSchema = Yup.object({
 const initialValues: NewNoteContent = {
   title: "",
   content: "",
-  tag: "Personal", // Початкове значення за замовчуванням
+  tag: "Personal", // Початкові значення за замовчуванням
 };
 
 export default function NoteForm({
@@ -49,7 +49,6 @@ export default function NoteForm({
         // Викликаємо зовнішній обробник onSubmit
         onSubmit(values);
         // Formik автоматично встановлює isSubmitting в false після завершення onSubmit
-        // Можна скинути форму, якщо потрібно
         resetForm(); // Скидаємо форму після успішного сабміту
       }}
     >

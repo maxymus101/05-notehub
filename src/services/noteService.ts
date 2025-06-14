@@ -23,7 +23,6 @@ export interface DeletedNoteInfo {
 const BASE_URL = "https://notehub-public.goit.study/api";
 
 const TOKEN = import.meta.env.VITE_NOTEHUB_T;
-console.log("Token = ", TOKEN);
 
 const axiosConfig = axios.create({
   baseURL: BASE_URL,
@@ -46,10 +45,7 @@ export const fetchNotes = async (
         perPage,
       },
     });
-    console.log(
-      `Fetched notes (page - ${page}, perPage - ${perPage}), search - "${search}"):`,
-      response
-    );
+
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -68,7 +64,6 @@ export const fetchNotes = async (
 export const createNote = async (content: NewNoteContent): Promise<Note> => {
   try {
     const response = await axiosConfig.post<Note>("/notes", content);
-    console.log("Note created:", response.data);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -87,7 +82,7 @@ export const createNote = async (content: NewNoteContent): Promise<Note> => {
 export const deleteNote = async (id: number): Promise<DeletedNoteInfo> => {
   try {
     const response = await axiosConfig.delete<DeletedNoteInfo>(`/notes/${id}`);
-    console.log(`Note with ID ${id} deleted:`, response.data);
+
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

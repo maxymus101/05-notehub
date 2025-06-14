@@ -2,8 +2,8 @@ export interface Note {
   id: number;
   title: string; // Заголовок нотатки
   content: string; // Текст нотатки
-  createdAt: string; // Дата створення (формат ISO 8601)
-  updatedAt: string; // Дата останнього оновлення (формат ISO 8601)
+  createdAt: string; // Дата створення
+  updatedAt: string; // Дата останнього оновлення
   tag: NoteTag;
 }
 

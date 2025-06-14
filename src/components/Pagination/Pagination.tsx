@@ -1,5 +1,5 @@
 import ReactPaginate from "react-paginate";
-import css from "./Pagination.module.css"; // Імпортуємо стилі для пагінації
+import css from "./Pagination.module.css";
 
 interface PaginationProps {
   pageCount: number;
@@ -19,8 +19,8 @@ export default function Pagination({
   return (
     <ReactPaginate
       pageCount={pageCount} // Загальна кількість сторінок
-      pageRangeDisplayed={5} // Кількість видимих номерів сторінок (приклад)
-      marginPagesDisplayed={1} // Кількість номерів сторінок по краях (приклад)
+      pageRangeDisplayed={5} // Кількість видимих номерів сторінок
+      marginPagesDisplayed={1} // Кількість номерів сторінок по краях
       onPageChange={onPageChange} // Обробник зміни сторінки
       forcePage={currentPage - 1} // Примусово встановлює активну сторінку (ReactPaginate використовує 0-індексацію)
       containerClassName={css.pagination} // Клас для контейнера пагінації
