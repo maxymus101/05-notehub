@@ -1,18 +1,19 @@
 import css from "./NoteForm.module.css";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Formik,
   Field,
   Form,
   ErrorMessage as FormikErrorMessage,
 } from "formik";
+import toast from "react-hot-toast";
 import * as Yup from "yup";
-import { type NoteTag } from "../../types/note.ts";
-import { type NewNoteContent } from "../../services/noteService.ts";
+import { type NoteTag, type Note } from "../../types/note.ts";
+import { type NewNoteContent, createNote } from "../../services/noteService.ts";
 
 interface NoteFormProps {
-  onSubmit: (values: NewNoteContent) => void; // Обробник сабміту форми
   onCancel: () => void; // Обробник для кнопки Cancel
-  isSubmitting: boolean; // Пропс для відключення кнопки при сабміті
+  onModalClose: () => void; // Пропс для закриття модального вікна після успішного сабміту
 }
 
 // Схема валідації за допомогою Yup
@@ -36,20 +37,32 @@ const initialValues: NewNoteContent = {
   tag: "Personal", // Початкові значення за замовчуванням
 };
 
-export default function NoteForm({
-  onSubmit,
-  onCancel,
-  isSubmitting,
-}: NoteFormProps) {
+export default function NoteForm({ onCancel, onModalClose }: NoteFormProps) {
+  const queryClient = useQueryClient(); // Ініціалізуємо queryClient
+
+  // === useMutation для створення нової нотатки ===
+  const createNoteMutation = useMutation<Note, Error, NewNoteContent>({
+    mutationFn: createNote, // Функція з noteService, яка виконує POST-запит
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] }); // Інвалідуємо кеш запитів "notes"
+      toast.success("Note created successfully!"); // Повідомлення про успіх
+      onModalClose(); // Закриваємо модалку після успішного створення
+    },
+    onError: (error) => {
+      toast.error(`Error creating note: ${error.message}`); // Повідомлення про помилку
+    },
+  });
+
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={(values, { resetForm }) => {
-        // Викликаємо зовнішній обробник onSubmit
-        onSubmit(values);
+        // Викликаємо мутацію створення нотатки
+        createNoteMutation.mutate(values);
         // Formik автоматично встановлює isSubmitting в false після завершення onSubmit
-        resetForm(); // Скидаємо форму після успішного сабміту
+        // resetForm тут, щоб очистити форму, але це відбувається після мутації
+        resetForm();
       }}
     >
       {() => (
@@ -108,7 +121,7 @@ export default function NoteForm({
             <button
               type="submit"
               className={css.submitButton}
-              disabled={isSubmitting} // Вимикаємо кнопку під час сабміту
+              disabled={createNoteMutation.isPending} // Вимикаємо кнопку під час сабміту
             >
               Create note
             </button>

@@ -9,8 +9,6 @@ import Loader from "../Loader/Loader.tsx";
 import ErrorMessage from "../ErrorMessage/ErrorMessage.tsx";
 import {
   type PaginatedNotesResponse,
-  type NewNoteContent,
-  createNote,
   deleteNote,
 } from "../../services/noteService.ts";
 import {
@@ -35,32 +33,17 @@ export default function App() {
   const [debouncedSearchQuery] = useDebounce(currentSearchQuery, 500);
   const [currentPage, setCurrentPage] = useState(1);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false); // Стан для керування модалкою створення нотатки
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // === useQuery для отримання нотаток ===
-  const {
-    data,
-    error: queryError,
-    isLoading,
-    isError,
-    isFetching,
-  } = useQuery<PaginatedNotesResponse, Error>({
+  const { data, isLoading, isError, isFetching } = useQuery<
+    PaginatedNotesResponse,
+    Error
+  >({
     queryKey: ["notes", currentPage, debouncedSearchQuery],
     queryFn: () => fetchNotes(currentPage, 12, debouncedSearchQuery),
     enabled: true,
     placeholderData: keepPreviousData,
-  });
-
-  // === useMutation для створення нової нотатки ===
-  const createNoteMutation = useMutation<Note, Error, NewNoteContent>({
-    mutationFn: createNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-      toast.success("Note created successfully!");
-      setIsNoteModalOpen(false);
-    },
-    onError: (error) => {
-      toast.error(`Error creating note: ${error.message}`);
-    },
   });
 
   // === useMutation для видалення нотатки ===
@@ -70,8 +53,10 @@ export default function App() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] }); // Інвалідуємо кеш після видалення
       toast.success("Note deleted successfully!");
+      setErrorMessage(null);
     },
     onError: (error) => {
+      setErrorMessage(error.message);
       toast.error(`Error deleting note: ${error.message}`);
     },
   });
@@ -93,12 +78,14 @@ export default function App() {
   const handleSearch = (newQuery: string) => {
     setCurrentSearchQuery(newQuery);
     setCurrentPage(1);
+    setErrorMessage(null);
   };
 
   // Обробник зміни сторінки для ReactPaginate:
   const handlePageClick = ({ selected }: { selected: number }) => {
     setCurrentPage(selected + 1);
     window.scrollTo({ top: 0, behavior: "smooth" });
+    setErrorMessage(null);
   };
 
   // Обробник видалення нотатки
@@ -106,19 +93,15 @@ export default function App() {
     deleteNoteMutation.mutate(id);
   };
 
-  // Обробник сабміту форми створення нотатки
-  const handleCreateNoteSubmit = (values: NewNoteContent) => {
-    createNoteMutation.mutate(values);
-  };
-
   // Обробник для кнопки "Create note +"
   const openCreateNoteModal = () => setIsNoteModalOpen(true);
   const closeCreateNoteModal = () => setIsNoteModalOpen(false);
 
   const handleCloseErrorMessage = () => {
+    setErrorMessage(null);
     queryClient.resetQueries({ queryKey: ["notes"], exact: false }); // Можливо, інвалідувати або скинути конкретні запити, якщо помилка пов'язана з ними
-    createNoteMutation.reset(); // Скидає стан мутації
     deleteNoteMutation.reset(); // Скидає стан мутації
+    queryClient.invalidateQueries({ queryKey: ["notes"] }); // Інвалідуємо запити після закриття помилки
   };
 
   // Локальні змінні для рендерингу, обчислюються на кожному рендері.
@@ -143,21 +126,16 @@ export default function App() {
           </button>
         </header>
 
-        {/* Показ лоадерів та помилок. Враховуємо лоадери як для запитів (isLoading, isFetching), так і для мутацій (isPending) */}
-        {(isLoading ||
-          isFetching ||
-          createNoteMutation.isPending ||
-          deleteNoteMutation.isPending) && <Loader />}
-        {(isError ||
-          createNoteMutation.isError ||
-          deleteNoteMutation.isError) && (
+        {/* Лоадер відображається, коли йде завантаження (первинне або фонове оновлення)
+          або коли виконуються мутації видалення.
+          `createNoteMutation.isPending` тепер керується всередині NoteForm. */}
+        {(isLoading || isFetching || deleteNoteMutation.isPending) && (
+          <Loader />
+        )}
+        {/* ErrorMessage відображається, якщо `errorMessage` не null. */}
+        {errorMessage && (
           <ErrorMessage
-            message={
-              queryError?.message ||
-              createNoteMutation.error?.message ||
-              deleteNoteMutation.error?.message ||
-              "An unknown error occurred"
-            }
+            message={errorMessage}
             onClose={handleCloseErrorMessage}
           />
         )}
@@ -187,9 +165,8 @@ export default function App() {
         <Toaster />
         <NoteModal isOpen={isNoteModalOpen} onClose={closeCreateNoteModal}>
           <NoteForm
-            onSubmit={handleCreateNoteSubmit}
             onCancel={closeCreateNoteModal}
-            isSubmitting={createNoteMutation.isPending}
+            onModalClose={closeCreateNoteModal}
           />
         </NoteModal>
       </div>
