@@ -35,7 +35,7 @@ export default function App() {
   const [debouncedSearchQuery] = useDebounce(currentSearchQuery, 500); // Затримка 500ms
   const [currentPage, setCurrentPage] = useState(1);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false); // Стан для керування модалкою створення нотатки
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // === useQuery для отримання нотаток ===
   const {
@@ -86,7 +86,7 @@ export default function App() {
 
   // useEffect для відображення сповіщення про відсутність нотаток
   useEffect(() => {
-    if (isSuccess && currentSearchQuery && (data?.results || []).length === 0) {
+    if (isSuccess && currentSearchQuery && (data?.notes || []).length === 0) {
       notifyNoNotesFound();
     }
   }, [isSuccess, data, currentSearchQuery]);
@@ -118,7 +118,7 @@ export default function App() {
   const closeCreateNoteModal = () => setIsNoteModalOpen(false);
 
   const handleCloseErrorMessage = () => {
-    setErrorMessage(null); // Просто скидаємо стан помилки
+    // setErrorMessage(null); // Просто скидаємо стан помилки
     // Також скидаємо стани помилок мутацій, якщо вони активні
     queryClient.resetQueries({ queryKey: ["notes"], exact: false }); // Можливо, інвалідувати або скинути конкретні запити, якщо помилка пов'язана з ними
     createNoteMutation.reset(); // Скидає стан мутації
@@ -128,9 +128,6 @@ export default function App() {
   // Локальні змінні для рендерингу, обчислюються на кожному рендері.
   const notesToDisplay: Note[] = data?.notes || [];
   const totalPagesToDisplay: number = data?.totalPages ?? 0;
-
-  console.log("Notes to display in App.tsx render:", notesToDisplay);
-  console.log("Total pages to display:", totalPagesToDisplay);
 
   return (
     <>
