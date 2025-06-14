@@ -21,7 +21,7 @@ const validationSchema = Yup.object({
     .min(3, "Title must be at least 3 characters")
     .max(50, "Title must be at most 50 characters")
     .required("Title is required"),
-  body: Yup.string().max(500, "Content must be at most 500 characters"),
+  content: Yup.string().max(500, "Content must be at most 500 characters"),
   tag: Yup.string<NoteTag>() // Вказуємо, що це тип NoteTag
     .oneOf(
       ["Todo", "Work", "Personal", "Meeting", "Shopping"],
@@ -67,16 +67,16 @@ export default function NoteForm({
           </div>
 
           <div className={css.formGroup}>
-            <label htmlFor="body">Content</label>
+            <label htmlFor="content">Content</label>
             <Field
               as="textarea"
-              id="body"
-              name="body"
+              id="content"
+              name="content"
               rows={8}
               className={css.textarea}
             />
             <FormikErrorMessage
-              name="body"
+              name="content"
               component="span"
               className={css.error}
             />

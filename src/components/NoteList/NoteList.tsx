@@ -20,11 +20,9 @@ export default function NoteList({ notes, onDeleteNote }: NotesListProps) {
           <h2 className={css.title}>{note.title}</h2>
           <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
-            {/* Додаємо заглушку для тегу, оскільки Note інтерфейс його не має */}
-            <span className={css.tag}>General</span>
+            <span className={css.tag}>{note.tag}</span>
             <button
               className={css.button}
-              // При кліку викликаємо функцію onDeleteNote, передаючи ID нотатки
               onClick={() => onDeleteNote?.(note.id)}
             >
               Delete
