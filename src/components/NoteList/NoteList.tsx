@@ -1,13 +1,34 @@
 import css from "./NoteList.module.css";
+import { useMutation, useQueryClient } from "@tanstack/react-query"; // Імпортуємо useMutation та useQueryClient
+import toast from "react-hot-toast"; // Імпортуємо toast для повідомлень
 import { type Note } from "../../types/note.ts";
+import { deleteNote, type DeletedNoteInfo } from "../../services/noteService";
 
-interface NotesListProps {
+interface NoteListProps {
   notes: Note[];
-  onDeleteNote?: (id: number) => void; // Функція видалення
 }
 
-export default function NoteList({ notes, onDeleteNote }: NotesListProps) {
-  // Відображаємо повідомлення, якщо нотаток немає.
+export default function NotesList({ notes }: NoteListProps) {
+  const queryClient = useQueryClient(); // Ініціалізуємо queryClient
+
+  // === useMutation для видалення нотатки ===
+  const deleteNoteMutation = useMutation<DeletedNoteInfo, Error, number>({
+    // Типи: успішна відповідь, помилка, ID нотатки
+    mutationFn: deleteNote, // Функція з noteService, яка виконує DELETE-запит
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] }); // Інвалідуємо кеш після успішного видалення
+      toast.success("Note deleted successfully!");
+    },
+    onError: (error) => {
+      toast.error(`Error deleting note: ${error.message}`);
+    },
+  });
+
+  // Обробник видалення нотатки, який викликає мутацію
+  const handleDeleteNote = (id: number) => {
+    deleteNoteMutation.mutate(id); // Запускаємо мутацію видалення
+  };
+
   if (notes.length === 0) {
     return <p className={css.noNotesMessage}>No notes found.</p>;
   }
@@ -16,12 +37,14 @@ export default function NoteList({ notes, onDeleteNote }: NotesListProps) {
       {notes.map((note) => (
         <li key={note.id} className={css.listItem}>
           <h2 className={css.title}>{note.title}</h2>
+
           <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
             <span className={css.tag}>{note.tag}</span>
             <button
               className={css.button}
-              onClick={() => onDeleteNote?.(note.id)}
+              onClick={() => handleDeleteNote(note.id)} // Викликаємо внутрішній обробник
+              disabled={deleteNoteMutation.isPending} // Вимикаємо кнопку під час видалення
             >
               Delete
             </button>

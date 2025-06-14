@@ -7,21 +7,14 @@ import Pagination from "../Pagination/Pagination.tsx";
 
 import Loader from "../Loader/Loader.tsx";
 import ErrorMessage from "../ErrorMessage/ErrorMessage.tsx";
-import {
-  type PaginatedNotesResponse,
-  deleteNote,
-} from "../../services/noteService.ts";
-import {
-  fetchNotes,
-  type DeletedNoteInfo,
-} from "../../services/noteService.ts";
+import { type PaginatedNotesResponse } from "../../services/noteService.ts";
+import { fetchNotes } from "../../services/noteService.ts";
 import { type Note } from "../../types/note.ts";
 
 import { useDebounce } from "use-debounce";
 import { useState, useEffect } from "react";
 import {
   useQuery,
-  useMutation,
   useQueryClient,
   keepPreviousData,
 } from "@tanstack/react-query";
@@ -44,21 +37,6 @@ export default function App() {
     queryFn: () => fetchNotes(currentPage, 12, debouncedSearchQuery),
     enabled: true,
     placeholderData: keepPreviousData,
-  });
-
-  // === useMutation для видалення нотатки ===
-  const deleteNoteMutation = useMutation<DeletedNoteInfo, Error, number>({
-    // Типи: успішна відповідь, помилка, ID нотатки
-    mutationFn: deleteNote, // Функція з noteService, яка виконує DELETE-запит
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] }); // Інвалідуємо кеш після видалення
-      toast.success("Note deleted successfully!");
-      setErrorMessage(null);
-    },
-    onError: (error) => {
-      setErrorMessage(error.message);
-      toast.error(`Error deleting note: ${error.message}`);
-    },
   });
 
   const notifyNoNotesFound = () =>
@@ -88,11 +66,6 @@ export default function App() {
     setErrorMessage(null);
   };
 
-  // Обробник видалення нотатки
-  const handleDeleteNote = (id: number) => {
-    deleteNoteMutation.mutate(id);
-  };
-
   // Обробник для кнопки "Create note +"
   const openCreateNoteModal = () => setIsNoteModalOpen(true);
   const closeCreateNoteModal = () => setIsNoteModalOpen(false);
@@ -100,7 +73,6 @@ export default function App() {
   const handleCloseErrorMessage = () => {
     setErrorMessage(null);
     queryClient.resetQueries({ queryKey: ["notes"], exact: false }); // Можливо, інвалідувати або скинути конкретні запити, якщо помилка пов'язана з ними
-    deleteNoteMutation.reset(); // Скидає стан мутації
     queryClient.invalidateQueries({ queryKey: ["notes"] }); // Інвалідуємо запити після закриття помилки
   };
 
@@ -126,12 +98,8 @@ export default function App() {
           </button>
         </header>
 
-        {/* Лоадер відображається, коли йде завантаження (первинне або фонове оновлення)
-          або коли виконуються мутації видалення.
-          `createNoteMutation.isPending` тепер керується всередині NoteForm. */}
-        {(isLoading || isFetching || deleteNoteMutation.isPending) && (
-          <Loader />
-        )}
+        {/* Лоадер відображається, коли йде завантаження (первинне або фонове оновлення) або коли виконуються мутації видалення.*/}
+        {(isLoading || isFetching) && <Loader />}
         {/* ErrorMessage відображається, якщо `errorMessage` не null. */}
         {errorMessage && (
           <ErrorMessage
@@ -139,9 +107,7 @@ export default function App() {
             onClose={handleCloseErrorMessage}
           />
         )}
-        {notesToDisplay.length > 0 && (
-          <NoteList notes={notesToDisplay} onDeleteNote={handleDeleteNote} />
-        )}
+        {notesToDisplay.length > 0 && <NoteList notes={notesToDisplay} />}
 
         {/* Повідомлення про початковий стан або відсутність результатів */}
         {!isLoading &&
