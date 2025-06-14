@@ -17,7 +17,7 @@ export interface PaginatedNotesResponse {
 
 export interface DeletedNoteInfo {
   message: string;
-  deletedNoteId: string;
+  deletedNoteId: number;
 }
 
 const BASE_URL = "https://notehub-public.goit.study/api";
@@ -84,7 +84,7 @@ export const createNote = async (content: NewNoteContent): Promise<Note> => {
   }
 };
 
-export const deleteNote = async (id: string): Promise<DeletedNoteInfo> => {
+export const deleteNote = async (id: number): Promise<DeletedNoteInfo> => {
   try {
     const response = await axiosConfig.delete<DeletedNoteInfo>(`/notes/${id}`);
     console.log(`Note with ID ${id} deleted:`, response.data);

@@ -65,7 +65,7 @@ export default function App() {
   });
 
   // === useMutation для видалення нотатки ===
-  const deleteNoteMutation = useMutation<DeletedNoteInfo, Error, string>({
+  const deleteNoteMutation = useMutation<DeletedNoteInfo, Error, number>({
     // Типи: успішна відповідь, помилка, ID нотатки
     mutationFn: deleteNote, // Функція з noteService, яка виконує DELETE-запит
     onSuccess: () => {
@@ -103,7 +103,7 @@ export default function App() {
   };
 
   //* Обробник видалення нотатки
-  const handleDeleteNote = (id: string) => {
+  const handleDeleteNote = (id: number) => {
     deleteNoteMutation.mutate(id);
   };
 
