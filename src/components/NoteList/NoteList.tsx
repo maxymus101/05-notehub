@@ -4,7 +4,7 @@ import { type Note } from "../../types/note.ts";
 interface NotesListProps {
   notes: Note[];
   // onSelectNote?: (note: Note) => void; // Якщо ви хочете відкривати модалку для нотаток
-  onDeleteNote?: (id: string) => void; // Якщо ви хочете додати функцію видалення
+  onDeleteNote?: (id: number) => void; // Якщо ви хочете додати функцію видалення
 }
 
 export default function NoteList({ notes, onDeleteNote }: NotesListProps) {
@@ -16,7 +16,7 @@ export default function NoteList({ notes, onDeleteNote }: NotesListProps) {
   return (
     <ul className={css.list}>
       {notes.map((note) => (
-        <li key={note._id} className={css.listItem}>
+        <li key={note.id} className={css.listItem}>
           <h2 className={css.title}>{note.title}</h2>
           <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
@@ -25,7 +25,7 @@ export default function NoteList({ notes, onDeleteNote }: NotesListProps) {
             <button
               className={css.button}
               // При кліку викликаємо функцію onDeleteNote, передаючи ID нотатки
-              onClick={() => onDeleteNote?.(note._id)}
+              onClick={() => onDeleteNote?.(note.id)}
             >
               Delete
             </button>

@@ -43,7 +43,6 @@ export default function App() {
     error: queryError,
     isLoading,
     isError,
-    isSuccess,
     isFetching,
   } = useQuery<PaginatedNotesResponse, Error>({
     queryKey: ["notes", currentPage, debouncedSearchQuery],
@@ -86,10 +85,10 @@ export default function App() {
 
   // useEffect для відображення сповіщення про відсутність нотаток
   useEffect(() => {
-    if (isSuccess && currentSearchQuery && (data?.notes || []).length === 0) {
+    if (data?.notes.length === 0) {
       notifyNoNotesFound();
     }
-  }, [isSuccess, data, currentSearchQuery]);
+  }, [data]);
 
   // Обробник пошуку:
   const handleSearch = (newQuery: string) => {

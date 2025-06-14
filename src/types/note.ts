@@ -1,5 +1,5 @@
 export interface Note {
-  _id: string; // Унікальний ідентифікатор нотатки (зверніть увагу на _id у MongoDB)
+  id: number;
   title: string; // Заголовок нотатки
   content: string; // Текст нотатки
   createdAt: string; // Дата створення (формат ISO 8601)
